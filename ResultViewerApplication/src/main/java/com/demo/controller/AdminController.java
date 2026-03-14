@@ -27,6 +27,11 @@ public class AdminController {
         this.studentRepo = studentRepo;
     }
 
+    @PostMapping("/result-page")
+    public String loginHandler(){
+        return "redirect:/admin/add-result";
+    }
+
     @GetMapping("/add-result")
     public String addResultForm(Model model) {
         StudentForm studentForm = new StudentForm();
