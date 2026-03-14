@@ -11,6 +11,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -33,7 +34,10 @@ public class AdminController {
     }
 
     @GetMapping("/add-result")
-    public String addResultForm(Model model) {
+    public String addResultForm(Principal principal, Model model) {
+
+        String name = principal.getName();
+
         StudentForm studentForm = new StudentForm();
 
         List<String> standardOptions = new ArrayList<>();
@@ -47,6 +51,7 @@ public class AdminController {
 
         model.addAttribute("studentForm", studentForm);
         model.addAttribute("standardOptions", standardOptions);
+        model.addAttribute("name", name);
         return "admin/add_result";
     }
 
