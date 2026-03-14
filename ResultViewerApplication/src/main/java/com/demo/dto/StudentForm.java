@@ -6,6 +6,8 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -35,4 +37,6 @@ public class StudentForm {
     private String fatherName;
     @NotBlank(message = "Gender is required !!")
     private String gender;
+
+    private List<MarksForm> marks = new ArrayList<>();
 }

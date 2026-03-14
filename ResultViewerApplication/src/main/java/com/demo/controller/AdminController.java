@@ -1,6 +1,7 @@
 package com.demo.controller;
 
 import com.demo.dto.StudentForm;
+import com.demo.entity.Mark;
 import com.demo.entity.Student;
 import com.demo.repo.StudentRepo;
 import jakarta.validation.Valid;
@@ -8,10 +9,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,12 +45,13 @@ public class AdminController {
         return "admin/add_result";
     }
 
-    @RequestMapping(value = "/add-result-action", method = RequestMethod.POST)
+    @PostMapping(value = "/add-result-action")
     public String processAddResultForm(
             @Valid @ModelAttribute StudentForm studentForm,
             BindingResult bindingResult,
             Model model
     ) {
+
 
         if (bindingResult.hasErrors()) {
             List<String> standardOptions = new ArrayList<>();
@@ -70,8 +69,19 @@ public class AdminController {
 //        convert student form to student entity
 
         Student student = modelMapper.map(studentForm, Student.class);
+
+        //har marks to attach student
+        List<Mark> updatedList = student.getMarks().stream().map(mark -> {
+            mark.setStudent(student);
+            return mark;
+        }).toList();
+
+        //update student list
+        student.setMarks(updatedList);
+
+
         student.setId(UUID.randomUUID().toString());
-        Student savedStudent = studentRepo.save(student);
+        studentRepo.save(student);
         return "redirect:/admin/add-result?message=Student added successfully ";
 
     }
