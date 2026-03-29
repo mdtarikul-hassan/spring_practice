@@ -1,6 +1,8 @@
 package com.oauth.controller;
 
 import com.oauth.dto.User;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -26,6 +28,7 @@ public class UserController {
     }
 
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public String createUser(@RequestBody User user) {
         return "user created";
     }
