@@ -1,7 +1,7 @@
 package com.accesspoint.service;
 
-import com.accesspoint.entity.ProfileRequest;
-import com.accesspoint.entity.ProfileResponse;
+import com.accesspoint.io.ProfileRequest;
+import com.accesspoint.io.ProfileResponse;
 
 public interface UserService {
 

@@ -1,10 +1,9 @@
 package com.accesspoint.controller;
 
-import com.accesspoint.entity.ProfileRequest;
-import com.accesspoint.entity.ProfileResponse;
+import com.accesspoint.io.ProfileRequest;
+import com.accesspoint.io.ProfileResponse;
 import com.accesspoint.service.UserService;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 

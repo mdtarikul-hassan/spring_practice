@@ -1,7 +1,7 @@
 package com.accesspoint.service.impl;
 
-import com.accesspoint.entity.ProfileRequest;
-import com.accesspoint.entity.ProfileResponse;
+import com.accesspoint.io.ProfileRequest;
+import com.accesspoint.io.ProfileResponse;
 import com.accesspoint.entity.UserEntity;
 import com.accesspoint.repo.UserRepo;
 import com.accesspoint.service.UserService;

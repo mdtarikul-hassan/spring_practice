@@ -1,4 +1,4 @@
-package com.accesspoint.entity;
+package com.accesspoint.io;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
