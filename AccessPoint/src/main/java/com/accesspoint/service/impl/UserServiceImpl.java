@@ -6,6 +6,7 @@ import com.accesspoint.entity.UserEntity;
 import com.accesspoint.repo.UserRepo;
 import com.accesspoint.service.UserService;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -15,9 +16,11 @@ import java.util.UUID;
 public class UserServiceImpl implements UserService {
 
     private UserRepo userRepo;
+    private PasswordEncoder passwordEncoder;
 
-    public UserServiceImpl(UserRepo userRepo) {
+    public UserServiceImpl(UserRepo userRepo, PasswordEncoder passwordEncoder) {
         this.userRepo = userRepo;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
@@ -44,7 +47,7 @@ public class UserServiceImpl implements UserService {
                 .userId(UUID.randomUUID().toString())
                 .name(request.getName())
                 .email(request.getEmail())
-                .password(request.getPassword())
+                .password(passwordEncoder.encode(request.getPassword()))
                 .isAccountVerified(true)
                 .verifyOtp(null)
                 .verifyOtpExpiredAt(null)
