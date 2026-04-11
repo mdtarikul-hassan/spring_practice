@@ -6,10 +6,12 @@ import com.accesspoint.entity.UserEntity;
 import com.accesspoint.repo.UserRepo;
 import com.accesspoint.service.UserService;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -31,6 +33,13 @@ public class UserServiceImpl implements UserService {
             return convertToProfileResponse(newProfile);
         }
         throw new ResponseStatusException(HttpStatus.CONFLICT, "Your email is already exits");
+    }
+
+    @Override
+    public ProfileResponse getProfile(String email) {
+        UserEntity existingUser = userRepo.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("Userbname not found"));
+        return convertToProfileResponse(existingUser);
     }
 
     private ProfileResponse convertToProfileResponse(UserEntity newProfile) {

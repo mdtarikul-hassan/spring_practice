@@ -4,6 +4,8 @@ import com.accesspoint.Security.AppUserDetailsService;
 import com.accesspoint.Utils.JwtUtil;
 import com.accesspoint.io.AuthRequest;
 import com.accesspoint.io.AuthResponse;
+import com.accesspoint.io.ProfileResponse;
+import com.accesspoint.service.UserService;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
@@ -12,11 +14,9 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.annotation.CurrentSecurityContext;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.time.Duration;
 import java.util.HashMap;
@@ -28,11 +28,13 @@ public class AuthController {
     private AuthenticationManager authenticationManager;
     private AppUserDetailsService userDetailsService;
     private JwtUtil jwtUtil;
+    private UserService userService;
 
-    public AuthController(AuthenticationManager authenticationManager, AppUserDetailsService userDetailsService, JwtUtil jwtUtil) {
+    public AuthController(AuthenticationManager authenticationManager, AppUserDetailsService userDetailsService, JwtUtil jwtUtil, UserService userService) {
         this.authenticationManager = authenticationManager;
         this.userDetailsService = userDetailsService;
         this.jwtUtil = jwtUtil;
+        this.userService = userService;
     }
 
     @PostMapping("/login")

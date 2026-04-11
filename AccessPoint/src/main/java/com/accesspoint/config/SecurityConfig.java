@@ -27,10 +27,12 @@ public class SecurityConfig {
 
     private AppUserDetailsService appUserDetailsService;
     private JwtRequestFilter jwtRequestFilter;
+    private CustomAuthenticationEntryPoint authenticationEntryPoint;
 
-    public SecurityConfig(AppUserDetailsService appUserDetailsService, JwtRequestFilter jwtRequestFilter) {
+    public SecurityConfig(AppUserDetailsService appUserDetailsService, JwtRequestFilter jwtRequestFilter, CustomAuthenticationEntryPoint authenticationEntryPoint) {
         this.appUserDetailsService = appUserDetailsService;
         this.jwtRequestFilter = jwtRequestFilter;
+        this.authenticationEntryPoint = authenticationEntryPoint;
     }
 
     @Bean
@@ -42,7 +44,9 @@ public class SecurityConfig {
                         .anyRequest().authenticated())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .logout(logout -> logout.disable())
-                .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class)
+                .exceptionHandling(exception -> exception
+                        .authenticationEntryPoint(authenticationEntryPoint));
 
         return http.build();
     }

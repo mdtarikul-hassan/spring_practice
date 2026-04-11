@@ -5,6 +5,7 @@ import com.accesspoint.io.ProfileResponse;
 import com.accesspoint.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.annotation.CurrentSecurityContext;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -20,6 +21,14 @@ public class UserController {
     @ResponseStatus(HttpStatus.CREATED)
     public ProfileResponse register(@Valid @RequestBody ProfileRequest request) {
         ProfileResponse profile = userService.createProfile(request);
+        return profile;
+    }
+
+    @GetMapping("/profile")
+    public ProfileResponse getProfile(@CurrentSecurityContext(expression = "authentication?.name") String email){
+        ProfileResponse profile = userService.getProfile(email);
+
+
         return profile;
     }
 }
