@@ -87,7 +87,6 @@ public class AuthController {
 
     @GetMapping("/is-authenticated")
     public ResponseEntity<Boolean> isAuthenticated(@CurrentSecurityContext(expression = "authentication?.name") String email){
-
         return ResponseEntity.ok(email != null);
     }
 }

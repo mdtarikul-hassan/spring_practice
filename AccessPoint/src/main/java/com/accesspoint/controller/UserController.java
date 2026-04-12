@@ -25,6 +25,7 @@ public class UserController {
     public ProfileResponse register(@Valid @RequestBody ProfileRequest request) {
         ProfileResponse response = userService.createProfile(request);
         emailService.sendWelcomeEmail(response.getEmail(), response.getName());
+
         return response;
     }
 
