@@ -4,6 +4,7 @@ import com.accesspoint.io.ProfileRequest;
 import com.accesspoint.io.ProfileResponse;
 import com.accesspoint.entity.UserEntity;
 import com.accesspoint.repo.UserRepo;
+import com.accesspoint.service.EmailService;
 import com.accesspoint.service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -13,16 +14,19 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.ThreadLocalRandom;
 
 @Service
 public class UserServiceImpl implements UserService {
 
     private UserRepo userRepo;
     private PasswordEncoder passwordEncoder;
+    private EmailService emailService;
 
-    public UserServiceImpl(UserRepo userRepo, PasswordEncoder passwordEncoder) {
+    public UserServiceImpl(UserRepo userRepo, PasswordEncoder passwordEncoder, EmailService emailService) {
         this.userRepo = userRepo;
         this.passwordEncoder = passwordEncoder;
+        this.emailService = emailService;
     }
 
     @Override
@@ -38,8 +42,34 @@ public class UserServiceImpl implements UserService {
     @Override
     public ProfileResponse getProfile(String email) {
         UserEntity existingUser = userRepo.findByEmail(email)
-                .orElseThrow(() -> new UsernameNotFoundException("Userbname not found"));
+                .orElseThrow(() -> new UsernameNotFoundException("Username not found"));
         return convertToProfileResponse(existingUser);
+    }
+
+    @Override
+    public void sendResetOtp(String email) {
+        UserEntity existingUser = userRepo.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException("Username not found"));
+
+        // generate otp ( 6 digit )
+        String otp = String.valueOf(ThreadLocalRandom.current().nextInt(100000, 999999));
+
+        // calculate expiration (up to 10 minutes)
+        Long expirationTime = System.currentTimeMillis()+10*60*1000;
+
+        // update the user profile
+        existingUser.setResetOtp(otp);
+        existingUser.setResetOtpExpiredAt(expirationTime);
+
+        // send into the database
+        userRepo.save(existingUser);
+
+
+        try{
+            emailService.sendResetOtpEmail(existingUser.getEmail(), otp);
+        } catch (Exception e) {
+            throw new RuntimeException("Unable to sent otp!");
+        }
+
     }
 
     private ProfileResponse convertToProfileResponse(UserEntity newProfile) {

@@ -8,4 +8,7 @@ public interface UserService {
     public ProfileResponse createProfile(ProfileRequest request);
 
     public ProfileResponse getProfile(String email);
+
+    public void sendResetOtp(String email);
+
 }

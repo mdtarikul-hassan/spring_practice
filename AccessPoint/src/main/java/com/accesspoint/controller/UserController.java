@@ -33,7 +33,8 @@ public class UserController {
     public ProfileResponse getProfile(@CurrentSecurityContext(expression = "authentication?.name") String email){
         ProfileResponse profile = userService.getProfile(email);
 
-
         return profile;
     }
+
+
 }
