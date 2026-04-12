@@ -5,7 +5,9 @@ import com.accesspoint.Utils.JwtUtil;
 import com.accesspoint.io.AuthRequest;
 import com.accesspoint.io.AuthResponse;
 import com.accesspoint.io.ProfileResponse;
+import com.accesspoint.io.ResetPasswordRequest;
 import com.accesspoint.service.UserService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
@@ -95,6 +97,15 @@ public class AuthController {
     public void sendResetOtp(@RequestParam String email){
         try{
             userService.sendResetOtp(email);
+        }catch (Exception e){
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,e.getMessage());
+        }
+    }
+
+    @PostMapping("/reset-password")
+    public void resetPassword(@Valid @RequestBody ResetPasswordRequest resetPasswordRequest){
+        try{
+            userService.resetPassword(resetPasswordRequest.getEmail(), resetPasswordRequest.getOtp(),  resetPasswordRequest.getNewPassword());
         }catch (Exception e){
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,e.getMessage());
         }

@@ -11,4 +11,6 @@ public interface UserService {
 
     public void sendResetOtp(String email);
 
+    public void resetPassword(String email, String otp, String newPassword);
+
 }

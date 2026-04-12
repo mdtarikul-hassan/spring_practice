@@ -72,6 +72,26 @@ public class UserServiceImpl implements UserService {
 
     }
 
+    @Override
+    public void resetPassword(String email, String otp, String newPassword) {
+        UserEntity existingUser = userRepo.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException("email not found "+email));
+
+        if(existingUser.getResetOtp() == null || !existingUser.getResetOtp().equals(otp)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid OTP");
+        }
+
+        if(existingUser.getResetOtpExpiredAt() < System.currentTimeMillis()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "OTP expired");
+        }
+
+        existingUser.setPassword(passwordEncoder.encode(newPassword));
+        existingUser.setResetOtp(null);
+        existingUser.setResetOtpExpiredAt(0L);
+
+        userRepo.save(existingUser);
+
+    }
+
     private ProfileResponse convertToProfileResponse(UserEntity newProfile) {
         return ProfileResponse.builder()
                 .userId(newProfile.getUserId())
