@@ -92,6 +92,41 @@ public class UserServiceImpl implements UserService {
 
     }
 
+    @Override
+    public void sendOtp(String email) {
+        UserEntity existingUser = userRepo.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException("email not found"));
+
+        if(existingUser.getIsAccountVerified() != null && !existingUser.getIsAccountVerified()) {
+            return;
+        }
+
+        // generate 6 digit otp
+        String otp = String.valueOf(ThreadLocalRandom.current().nextInt(100000, 999999));
+
+        // calculate expiration (up to 10 minutes)
+        Long expirationTime = System.currentTimeMillis()+10*60*1000;
+
+        // update the userEntity
+        existingUser.setVerifyOtp(otp);
+        existingUser.setVerifyOtpExpiredAt(expirationTime);
+
+        // save the database
+        userRepo.save(existingUser);
+
+        try{
+            emailService.sendOtpEmail(existingUser.getEmail(), otp);
+        }
+        catch (Exception e) {
+            throw new RuntimeException("Unable to sent otp!");
+        }
+
+    }
+
+    @Override
+    public void verifyOtp(String email, String otp) {
+
+    }
+
     private ProfileResponse convertToProfileResponse(UserEntity newProfile) {
         return ProfileResponse.builder()
                 .userId(newProfile.getUserId())

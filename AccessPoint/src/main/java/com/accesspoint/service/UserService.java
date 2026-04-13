@@ -13,4 +13,8 @@ public interface UserService {
 
     public void resetPassword(String email, String otp, String newPassword);
 
+    public void sendOtp(String email);
+
+    public void verifyOtp(String email, String otp);
+
 }
