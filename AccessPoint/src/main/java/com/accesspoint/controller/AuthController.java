@@ -121,4 +121,19 @@ public class AuthController {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,e.getMessage());
         }
     }
+
+    @PostMapping("/verify-otp")
+    public void verifyOto(@RequestBody Map<String, String> request, @CurrentSecurityContext(expression = "authentication?.name") String email){
+
+        if(request.get("otp").toString() == null){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Missing otp");
+        }
+
+        try{
+            userService.verifyOtp(email, request.get("otp").toString());
+        }
+        catch (Exception e){
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,e.getMessage());
+        }
+    }
 }

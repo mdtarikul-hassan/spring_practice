@@ -96,15 +96,15 @@ public class UserServiceImpl implements UserService {
     public void sendOtp(String email) {
         UserEntity existingUser = userRepo.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException("email not found"));
 
-        if(existingUser.getIsAccountVerified() != null && !existingUser.getIsAccountVerified()) {
+        if(existingUser.getIsAccountVerified() != null && existingUser.getIsAccountVerified()) {
             return;
         }
 
         // generate 6 digit otp
         String otp = String.valueOf(ThreadLocalRandom.current().nextInt(100000, 999999));
 
-        // calculate expiration (up to 10 minutes)
-        Long expirationTime = System.currentTimeMillis()+10*60*1000;
+        // calculate expiration (up to 5 minutes)
+        Long expirationTime = System.currentTimeMillis()+5*60*1000;
 
         // update the userEntity
         existingUser.setVerifyOtp(otp);
@@ -124,6 +124,21 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void verifyOtp(String email, String otp) {
+        UserEntity existingUser = userRepo.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException("email not found"));
+
+        if(existingUser.getVerifyOtp() == null || !existingUser.getVerifyOtp().equals(otp)){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid OTP");
+        }
+
+        if(existingUser.getVerifyOtpExpiredAt() < System.currentTimeMillis()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "OTP expired");
+        }
+
+        existingUser.setIsAccountVerified(true);
+        existingUser.setVerifyOtp(null);
+        existingUser.setVerifyOtpExpiredAt(0L);
+
+        userRepo.save(existingUser);
 
     }
 
@@ -132,6 +147,7 @@ public class UserServiceImpl implements UserService {
                 .userId(newProfile.getUserId())
                 .name(newProfile.getName())
                 .email(newProfile.getEmail())
+                .isAccountVerified(newProfile.getIsAccountVerified())
                 .build();
 
     }
@@ -142,7 +158,7 @@ public class UserServiceImpl implements UserService {
                 .name(request.getName())
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
-                .isAccountVerified(true)
+                .isAccountVerified(false)
                 .verifyOtp(null)
                 .verifyOtpExpiredAt(null)
                 .resetOtp(null)
